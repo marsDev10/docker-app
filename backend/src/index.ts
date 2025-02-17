@@ -23,9 +23,9 @@ const corsOptions = {
   app.use(cors(corsOptions));
   
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(express.json()); // 
-
-app.use(express.json());
+  app.use(express.json()); 
+  
+  app.use(express.json());
 
 
 (async () => {
