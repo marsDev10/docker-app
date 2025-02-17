@@ -1,0 +1,55 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend_service
+    restart: always
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app  # Monta el código fuente
+      - /app/node_modules  # Evita problemas con node_modules
+    command: ["nodemon", "--exec", "node --loader ts-node/esm", "--watch", "src", "src/index.ts"]
+    depends_on:
+      - mongodb
+    networks:
+      - mynetwork
+
+  mongodb:
+    image: mongo
+    container_name: mongodb_service
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mario
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mynetwork
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend_service
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app  # Monta el código fuente
+      - /app/node_modules  # Evita que los node_modules locales interfieran
+    command: ["npm", "run", "dev"]  # Usa Vite con hot reload
+    depends_on:
+      - backend
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  mongo-data:
